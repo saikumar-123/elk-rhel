@@ -1,0 +1,10 @@
+---
+- name: Execute Playbook
+  hosts: all
+  gather_facts: no
+  become: yes
+  become_method: sudo
+
+  roles:
+  - { role: logstash }
+

@@ -1,0 +1,7 @@
+---
+# tasks file for filebeat
+- include_vars: "main.yml"
+- include: install_beats.yml
+- include: configure_filebeat.yml
+- include: configure_auditbeat.yml
+- include: configure_beats.yml

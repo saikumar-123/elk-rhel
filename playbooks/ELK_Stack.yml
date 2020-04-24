@@ -1,0 +1,6 @@
+---
+- hosts: 10.0.0.104 
+  become_method: sudo 
+  become: true
+  roles:
+    - { role: elk_stack }

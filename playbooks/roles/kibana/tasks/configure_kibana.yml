@@ -1,0 +1,52 @@
+---
+- name: configure_kibana | Configure Kibana Host/Port
+  lineinfile:
+    path: "{{ kibana_conf }}"
+    state: present
+    create: yes
+    mode: 0644
+    owner: root
+    group: root
+    line: '{{ item }}'
+  loop:
+    - 'server.host: "{{ kibana_ server_ip }}"'
+    - 'server.port: {{ kibana_port }}'
+
+- name: configure_kibana | Configure Elastic URL
+  lineinfile:
+    path: "{{ kibana_conf }}"
+    state: present
+    line: 'elasticsearch.hosts: ["http://{{ elastic_server_ip }}:{{ elastic_port}}"]'
+  when: not ssl_on|bool
+
+- name: configure_kibana | Configure SSL For Kibana (if SSL True)
+  lineinfile:
+    path: "{{ kibana_conf }}"
+    state: present
+    line: "{{ item }}"
+  loop:
+    - "elasticsearch.ssl.certificateAuthorities: {{ kibana_cert_location }}{{ cert_ca_chain_name }}"
+    - "server.ssl.enabled: true"
+    - "server.ssl.key: {{ kibana_cert_location }}{{ cert_pem_key_name }}"
+    - "server.ssl.certificate: {{ kibana_cert_location }}{{ cert_pem_crt_name }}"
+  when: ssl_on|bool
+
+- name: configure_kibana | Replace Host Entry with HTTPS (if SSL True)
+  replace:
+    path: "{{ kibana_conf }}"
+    regexp: 'elasticsearch.hosts: \["http://{{ server_ip }}:{{ elastic_port}}"]'
+    replace: 'elasticsearch.hosts: ["https://{{ elastic_ server_ip }}:{{ elastic_port}}"]'
+  when: ssl_on|bool
+
+#in case configuration wasn't previously http -- or is new setup
+- name: configure_kibana | Ensure Elasticsearch.hosts Line Present (if SSL True)
+  lineinfile:
+    path: "{{ kibana_conf }}"
+    state: present
+    line: 'elasticsearch.hosts: ["https://{{ elastic_server_ip }}:{{ elastic_port}}"]'
+  when: ssl_on|bool
+
+- name: configure_kibana | Start Kibana Service
+  service:
+    name: kibana
+    state: started

@@ -1,0 +1,11 @@
+---
+- name: restart_ElasticSearch | Restarting the Services to Ensure Changes (if Any) Take Affect
+  service:
+    name: "elasticsearch"
+    state: restarted
+  changed_when: false
+
+- name: Give Elasticsearch a Second to Finish Booting Up
+  pause:
+    seconds: 15
+

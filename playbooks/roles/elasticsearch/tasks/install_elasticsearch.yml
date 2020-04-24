@@ -1,0 +1,63 @@
+---
+- name: Install_Elasticsearch | Load Vars
+  include_vars: "main.yml"
+
+- name: Install_Elasticsearch | Install Java
+  yum:
+    name:
+      - java-1.8.0-openjdk
+      - java-1.8.0-openjdk-devel
+      - firewalld  
+    state: latest
+
+- name: Install_Elasticsearch | Grab Public Signing Key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Install_Elasticsearch | Add Elastic SW Yum Repo
+  yum_repository:
+    name: Elastic_7.X_repo
+    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    gpgcheck: true
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    description: Elastic 7.X Repo
+
+- name: Install_Elasticsearch | Add Elastic Curator Yum Repo
+  yum_repository:
+    name: Curator_5_Repo
+    baseurl: https://packages.elastic.co/curator/5/centos/7
+    gpgcheck: True
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    description: Curator 5 Repo For RHEL Family
+  when: curator_on|bool
+
+- name: Install_Elasticsearch | Install Elasticssearch SW
+  yum:
+    name:
+      - elasticsearch
+    update_cache: true
+
+- name: Install_Elasticsearch | Install Elastic curator SW
+  yum:
+    name:
+      - elasticsearch-curator
+    update_cache: true
+  when: curator_on|bool
+
+- name: install_Elasticsearch | Open Firewall Ports For Non-Localhost (RedHat Distros)
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - "{{ elastic_port }}/tcp"
+    - "{{ kibana_port }}/tcp"
+  when: server_ip != "localhost"
+
+- name: install_Elasticsearch | Open Firewall Ports for Beats Regardless of Install IP (RedHat Distros)
+  firewalld:
+    port: "{{ beat_port }}/tcp"
+    permanent: true
+    state: enabled
+

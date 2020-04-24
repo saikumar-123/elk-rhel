@@ -1,0 +1,21 @@
+---
+# defaults file for ELK_Stack
+curator_conf: /etc/curator/curator.yml
+curator_delete_conf: /etc/curator/delete_indices.yml
+delete_after_days: 365
+elastic_conf: /etc/elasticsearch/elasticsearch.yml
+elastic_port: 9200
+#elastic_data_path: /data/elasticsearch
+replicas: 0
+elastic_server_ip: localhost
+shards: 1
+curator_on: false
+
+#SSL Settings
+cert_ca_chain_name: "elk.csr"
+cert_location: /etc/ssl/
+cert_pem_key_name: "elk.pem"
+cert_pem_crt_name: "elk.crt"
+elastic_cert_location: /etc/elasticsearch/certs/
+ssl_generate_cert: false
+ssl_on: false

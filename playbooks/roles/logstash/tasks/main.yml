@@ -1,0 +1,15 @@
+---
+# import vars
+- include_vars: "main.yml"
+
+# install sw
+- include: install_logstash.yml
+
+#configure
+- include: ssl_certs.yml
+  when: ssl_on|bool
+
+- include: configure_logstash.yml
+  #  when: inventory_hostname in groups['Logstash']
+
+- include: restart_logstash.yml

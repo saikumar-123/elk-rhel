@@ -1,0 +1,36 @@
+---
+- name: configure_auditbeat | See if Default Config File
+  lineinfile:
+    path: "{{ auditbeat_conf }}"
+    line: "#output.logstash:"
+    state: absent
+  check_mode: true
+  register: conf
+
+- name: configure_auditbeat | Configure Auditbeat (Comment/Uncomment Required Fields)
+  replace:
+    path: "{{ auditbeat_conf }}"
+    mode: 0600
+    owner: root
+    group: root
+    regexp: "{{ item.regex }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - { regex: "output.elasticsearch:", replace: "#output.elasticsearch" }
+    - { regex: 'hosts: \["localhost:9200"]', replace: '#hosts: ["localhost:9200"]' }
+    - { regex: "#output.logstash:", replace: "output.logstash:" }
+    - { regex: '#hosts: \["localhost:5044"]', replace: 'hosts: ["{{ beats_server_ip }}:{{ beat_port}}"]'}
+    - { regex: "#ilm.enabled: false", replace: "ilm.enabled: false" }
+  when: (conf.changed) or (conf.failed)
+
+- name: configure_auditbeat | Restart auditbeat
+  service:
+    name: auditbeat
+    state: restarted
+  changed_when: false
+
+- name: configure_auditbeat | Start auditbeat
+  service:
+    name: auditbeat
+    state: started
+    enabled: true

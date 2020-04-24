@@ -1,0 +1,18 @@
+
+---
+# DEFAULTS FOR kibana
+#beat_port: 5044
+#elastic_server_ip: localhost
+#elastic_port: 9200
+#kibana_conf: /etc/kibana/kibana.yml
+#kibana_port: 5601
+#kibana_server_ip: localhost
+
+#SSL SETTINGS
+#cert_ca_chain_name: "elk.csr"
+#cert_location: /etc/ssl/
+#cert_pem_key_name: "elk.pem"
+#cert_pem_crt_name: "elk.crt"
+#kibana_cert_location: /etc/kibana/certs/
+#ssl_generate_cert: false
+#ssl_on: false

@@ -1,0 +1,15 @@
+---
+# import vars
+- include_vars: "main.yml"
+
+# install 
+- include: install_kibana.yml
+
+#configure
+- include: ssl_certs.yml
+  when: ssl_on|bool
+
+- include: configure_kibana.yml
+  #  when: inventory_hostname in groups['Kibana']
+
+- include: restart_kibana.yml

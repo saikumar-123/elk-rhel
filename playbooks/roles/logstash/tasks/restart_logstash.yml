@@ -1,0 +1,9 @@
+---
+
+- name: restart_logstash | Restarting the logstash Service
+  service:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - "logstash"
+  changed_when: false

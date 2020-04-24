@@ -1,0 +1,47 @@
+---
+- name: install_sw_RHEL | Load Vars
+  include_vars: "main.yml"
+
+- name: install_sw_RHEL | Install Java
+  yum:
+    name:
+      - java-1.8.0-openjdk
+      - java-1.8.0-openjdk-devel
+      - firewalld  
+    state: latest
+
+- name: install_sw_RHEL | Grab Public Signing Key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: install_sw_RHEL | Add Elastic SW Yum Repo
+  yum_repository:
+    name: Elastic_7.X_repo
+    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    gpgcheck: true
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    description: Elastic 7.X Repo
+
+- name: install_sw_RHEL | Install Logstash SW
+  yum:
+    name:
+      - logstash
+    update_cache: true
+    #  when: inventory_hostname in groups['Logstash']
+
+- name: install_sw_RHEL | Open Firewall Ports For Non-Localhost (RedHat Distros)
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - "{{ elastic_port }}/tcp"
+    - "{{ kibana_port }}/tcp"
+  when: logstash_server_ip != "localhost"
+
+- name: install_sw_RHEL | Open Firewall Ports for Beats Regardless of Install IP (RedHat Distros)
+  firewalld:
+    port: "{{ beat_port }}/tcp"
+    permanent: true
+    state: enabled

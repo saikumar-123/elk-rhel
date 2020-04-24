@@ -1,0 +1,17 @@
+---
+# import vars
+- include_vars: "main.yml"
+
+# install sw
+- include: install_elasticsearch.yml
+
+#configure
+#- include: ssl_certs.yaml
+#  when: ssl_on|bool
+
+- include: configure_elasticsearch.yml
+
+- include: configure_curator.yml
+  when: curator_on|bool
+
+- include: restart_elasticsearch.yml

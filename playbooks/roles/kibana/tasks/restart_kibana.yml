@@ -1,0 +1,8 @@
+---
+- name: restart_kibana | Restarting Kibana
+  service:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - "kibana"
+  changed_when: false

@@ -1,0 +1,102 @@
+# ========== Elasticsearch configuration ===============
+# 
+# NOTE:   Elasticsearch comes with reasonable defaults for most settings.
+#         Before you set out to tweek and tune the configuration, make sure you 
+#         understand what are you trying to accomplish and the consequences.
+
+# The primary way of configuring a node is via this file. This template lists 
+# the most important settings you may want to configure for a production cluster.
+
+# Please consult the documentation for further information on configuration options:
+# https://www.elastic.com/quide/en/Elasticsearch/reference/index.html
+# 
+# ---------------- Cluster ----------------------
+# 
+# Use a description name for your cluster:
+# 
+cluster.name: {{ es_cluster_name }}
+# 
+# 
+# --------------- Node -------------------------
+# 
+# Use a description name for the nodes: 
+# 
+node.name: {{ es_cluster_name }}/{{ ansible_hostname }}
+node.master: {{ es_master }}
+node.data: {{ es_data }}
+# 
+# Add custom attributes to the node:
+# 
+node.attr.rack: r1
+# 
+# 
+# ----------------- Paths ------------------
+# 
+# Path to directory where to store the data (separate multiple locations by comma):
+# 
+path.data: {{ es_data_path }}
+# 
+# Path to log files:
+# 
+# path.logs: {{ es_log_path }}
+# 
+# ----------------- Memory --------------------
+# 
+# Lock the memory on startup:
+# 
+bootstrap.memory.lock: true
+# 
+# Make sure that the heap size is set about half the memory available
+# on the system and that the owner of the process is allowed to use this 
+# 
+#  
+# ----------------- Network -----------------
+# 
+# Set the bind address to a specific IP (IPv4 or IPv6):
+# 
+network.host: [ _site_ ]
+# 
+# Set a custom port for HTTP:
+# 
+# http.port: 9200
+# 
+# For more information, consult the network module documentation.
+# 
+# ------------------ Discover ----------------
+# 
+# Pass an initial list of hosts to perform discovery when new node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+# 
+discovery.zen.ping.unicast.hosts: {{ es_master_nodes }}
+# 
+# Prevent the "split_brain" by configuring the majority of nodes {total number of master}
+# 
+Discover.zen.minimum_master_nodes: {{ es_minimum_nodes }}
+# 
+# For more information, consult the zen discovery module documentation.
+# 
+cluster.routing.allocation.disk.threshold_enabled: true
+cluster.routing.allocation.disk.watermark.low: 90%
+cluster.routing.allocation.disk.watermark.high: 95%
+# 
+# 
+# ------------------ Gateway -----------------
+# 
+# Block initial recovery after a full cluster restart until N nodes are started:
+# 
+gateway.recovery_after_nodes: {{ es_recover_after_nodes }}
+# 
+# For more information, consult the gateway module documentation.
+# 
+# ------------------- Various ------------------
+# 
+# Require explicit names when deleting indices:
+# 
+# action.destructive_requires_name: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_moe: certificate
+xpack.security.transport.ssl.key: {{ es_cert_dir}}/{{ ansible_hostname }}.key
+xpack.security.transport.ssl.certificate: {{ es_cert_dir}}/{{ ansible_hostname}}-- **********
+xpack.security.transport.ssl.certificate_authorities: [ "{{ es_cert_dir}}/ Elasticsearch ***** 
+cv-datacenter2-ca.cct" ]
+

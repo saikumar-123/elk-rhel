@@ -1,0 +1,46 @@
+---
+- name: install_kibana | Load Vars
+  include_vars: "main.yml"
+
+- name: install_kibana | Install Java
+  yum:
+    name:
+      - java-1.8.0-openjdk
+      - java-1.8.0-openjdk-devel
+      - firewalld  
+    state: latest
+
+- name: install_kibana | Grab Public Signing Key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: install_kibana | Add Elastic SW Yum Repo
+  yum_repository:
+    name: Elastic_7.X_repo
+    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    gpgcheck: true
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    description: Elastic 7.X Repo
+
+- name: install_kibana | Install Kibana SW
+  yum:
+    name:
+      - kibana
+    update_cache: true
+
+- name: install_kibana | Open Firewall Ports For Non-Localhost (RedHat Distros)
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - "{{ elastic_port }}/tcp"
+    - "{{ kibana_port }}/tcp"
+  when: kibana_server_ip != "localhost"
+
+- name: install_kibana | Open Firewall Ports for Beats Regardless of Install IP (RedHat Distros)
+  firewalld:
+    port: "{{ beat_port }}/tcp"
+    permanent: true
+    state: enabled
