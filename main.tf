@@ -31,7 +31,7 @@ resource "aws_instance" "ansible-elastic" {
            command = " echo 'elastic_server_ip: ${aws_instance.ansible-elastic.private_ip}' > elk-vars.yml"
         }
 	provisioner "local-exec" {
-          command = "ansible-playbook --private-key=/home/sai.d/maagcpoc.pem -u ec2-user -i ${aws_instance.ansible-elastic.private_ip}, playbooks/elastic.yml --extra-vars '@elk-vars.yml'"
+          command = "ansible-playbook --private-key=/home/sai.d/poc.pem -u ec2-user -i ${aws_instance.ansible-elastic.private_ip}, playbooks/elastic.yml --extra-vars '@elk-vars.yml'"
 	}
 }
 
@@ -39,7 +39,7 @@ resource "aws_instance" "ansible-kibana" {
         ami = "${var.ami_id}"
         instance_type = "${var.kibana_instance_type}"
         key_name = "${var.key_name}"
-        subnet_id = "subnet-0de41be28e67725f4"
+        subnet_id = "subnet-0de41bxxxxxxxxxx"
         iam_instance_profile = "ec2_role_for_maagc"
         root_block_device {
             volume_type= "standard"
@@ -53,7 +53,7 @@ resource "aws_instance" "ansible-kibana" {
         }
 
         provisioner "local-exec" {
-          command = "ansible-playbook --private-key=/home/sai.d/maagcpoc.pem -u ec2-user -i ${aws_instance.ansible-logstash.private_ip}, playbooks/kibana.yml --extra-vars '@elk-vars.yml'"
+          command = "ansible-playbook --private-key=/home/sai.d/poc.pem -u ec2-user -i ${aws_instance.ansible-logstash.private_ip}, playbooks/kibana.yml --extra-vars '@elk-vars.yml'"
         }
         depends_on = [aws_instance.ansible-elastic]
 }
@@ -62,7 +62,7 @@ resource "aws_instance" "ansible-beats" {
         ami = "${var.ami_id}"
         instance_type = "${var.beats_instance_type}"
         key_name = "${var.key_name}"
-        subnet_id = "subnet-0de41be28e67725f4"
+        subnet_id = "subnet-0de4xxxxxxxxxxxxxxxxxx"
         iam_instance_profile = "ec2_role_for_maagc"
         root_block_device {
             volume_type= "standard"
@@ -76,7 +76,7 @@ resource "aws_instance" "ansible-beats" {
         }
 
         provisioner "local-exec" {
-          command = "ansible-playbook --private-key=/home/sai.d/maagcpoc.pem -u ec2-user -i ${aws_instance.ansible-beats.private_ip}, playbooks/beats.yml --extra-vars '@elk-vars.yml'"
+          command = "ansible-playbook --private-key=/home/sai.d/poc.pem -u ec2-user -i ${aws_instance.ansible-beats.private_ip}, playbooks/beats.yml --extra-vars '@elk-vars.yml'"
         }
         depends_on = [aws_instance.ansible-elastic,aws_instance.ansible-kibana]
 }
@@ -86,7 +86,7 @@ resource "aws_instance" "ansible-logstash" {
         ami = "${var.ami_id}"
         instance_type = "${var.logstash_instance_type}"
         key_name = "${var.key_name}"
-        subnet_id = "subnet-0de41be28e67725f4"
+        subnet_id = "subnet-0de41bxxxxxxxxxxxx"
         iam_instance_profile = "ec2_role_for_maagc"
         root_block_device {
             volume_type= "standard"
@@ -100,7 +100,7 @@ resource "aws_instance" "ansible-logstash" {
         }
 
         provisioner "local-exec" {
-          command = "ansible-playbook --private-key=/home/sai.d/maagcpoc.pem -u ec2-user -i ${aws_instance.ansible-logstash.private_ip}, playbooks/logstash.yml --extra-vars '@elk-vars.yml'"
+          command = "ansible-playbook --private-key=/home/sai.d/poc.pem -u ec2-user -i ${aws_instance.ansible-logstash.private_ip}, playbooks/logstash.yml --extra-vars '@elk-vars.yml'"
         }
         depends_on = [aws_instance.ansible-elastic,aws_instance.ansible-kibana,aws_instance.ansible-beats]
 }
